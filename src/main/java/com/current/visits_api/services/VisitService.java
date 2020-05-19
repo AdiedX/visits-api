@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Service
 public class VisitService {
@@ -20,8 +21,8 @@ public class VisitService {
     return visitRepository.save(visit);
   }
 
-  public Visit getVisit(Integer visitId) {
-    return visitRepository.findById(visitId).orElse(null);
+  public Optional<Visit> getVisit(Integer visitId) {
+    return visitRepository.findById(visitId);
   }
 
   public Collection<Visit> searchMatchingEntries(Integer userId, String searchString) {

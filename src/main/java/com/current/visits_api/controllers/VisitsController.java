@@ -6,6 +6,7 @@ import com.current.visits_api.models.VisitPayload;
 import com.current.visits_api.models.VisitResponse;
 import com.current.visits_api.services.UserService;
 import com.current.visits_api.services.VisitService;
+import com.current.visits_api.utils.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,38 +19,34 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping(path="api/v1")
 public class VisitsController {
-  @Autowired
   private final VisitService visitService;
-
-  @Autowired
   private final UserService userService;
+  private final ValidationUtil validationUtil;
 
   @Autowired
-  public VisitsController(VisitService visitService, UserService userService) {
+  public VisitsController(VisitService visitService, UserService userService, ValidationUtil validationUtil) {
     this.visitService = visitService;
     this.userService = userService;
+    this.validationUtil = validationUtil;
   }
 
   @PostMapping(path = "/visit")
   @ResponseBody
   public ResponseEntity<?> createVisit(@RequestBody VisitPayload payload) {
-    // Validate userName and location
+    if (!validationUtil.isAlphaNumeric(payload.getLocation()) || payload.getLocation().trim().length() == 0)
+      return new ResponseEntity<>("Location needs to be non-empty and alphanumeric", HttpStatus.BAD_REQUEST);
 
     try {
-      // Find user
-      User user = userService.getUser(payload.getUserId());
-
-      // Create visit with user object and location and save it to DB
-      Visit visit = new Visit(user, payload.getLocation());
-      visit = visitService.saveVisit(visit);
-
-      // Update user with latest visit object
-      userService.updateUser(payload.getUserId(), visit);
-
-      // Return 201, with visitId
-      return new ResponseEntity<>("Visit created with ID: " + visit.getId(), HttpStatus.CREATED);
+      Optional<User> user = userService.getUser(payload.getUserId());
+      if (user.isPresent()) {
+        Visit visit = visitService.saveVisit(new Visit(user.get(), payload.getLocation()));
+        userService.updateUser(payload.getUserId(), visit);
+        return new ResponseEntity<>("Visit created with ID: " + visit.getId(), HttpStatus.CREATED);
+      } else {
+        return new ResponseEntity<>("Could not find user with ID: " + payload.getUserId(), HttpStatus.NOT_FOUND);
+      }
     } catch(Exception e) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>("Could not process request", HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -57,16 +54,16 @@ public class VisitsController {
   @ResponseBody
   public ResponseEntity<?> getVisitById(@PathVariable Integer visitId) {
     try {
-      Visit visit = visitService.getVisit(visitId);
-      if (visit != null) {
-        VisitResponse v = new VisitResponse(visit);
-        List<VisitResponse> body = new ArrayList<>(Collections.singletonList(v));
+      Optional<VisitResponse> visitResponse = visitService.getVisit(visitId).map(VisitResponse::new);
+
+      if (visitResponse.isPresent()) {
+        List<VisitResponse> body = new ArrayList<>(Collections.singletonList(visitResponse.get()));
         return new ResponseEntity<>(body, HttpStatus.OK);
       } else {
-        return new ResponseEntity<>("Could not find visit with provided id", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>("Could not find visit with provided ID:" + visitId, HttpStatus.NOT_FOUND);
       }
     } catch (Exception e) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>("Could not process request", HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
