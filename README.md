@@ -8,6 +8,11 @@ A microservice to manager data about visits of users.
 * Creates a user in the db
 * `name` should be a non-empty, alphanumeric value
 
+*Headers*
+```
+Content-Type: 'application/json
+```
+
 *Example JSON body*
 ```json
 {
@@ -19,6 +24,11 @@ A microservice to manager data about visits of users.
 * Creates a visit for the specified user
 * `location` should be a non-empty, alphanumeric value
 * `userId` is the ID provided to you when the user record was created via the `POST /user` endpoint
+
+*Headers*
+```
+Content-Type: 'application/json
+```
 
 *Example JSON body*
 ```json
