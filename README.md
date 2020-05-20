@@ -1,6 +1,6 @@
 ## Visits API
 
-A microservice to manager data about visits of users.
+A microservice to manage data about visits of users.
 
 ## API
 
@@ -10,7 +10,7 @@ A microservice to manager data about visits of users.
 
 *Headers*
 ```
-Content-Type: 'application/json
+Content-Type: 'application/json'
 ```
 
 *Example JSON body*
@@ -27,7 +27,7 @@ Content-Type: 'application/json
 
 *Headers*
 ```
-Content-Type: 'application/json
+Content-Type: 'application/json'
 ```
 
 *Example JSON body*
