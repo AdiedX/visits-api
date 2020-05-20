@@ -4,7 +4,7 @@ A microservice to manager data about visits of users.
 
 ## API
 
-`POST https://visits-api.herokuapp.com/api/v1/user`
+#### `POST https://visits-api.herokuapp.com/api/v1/user`
 * Creates a user in the db
 * `name` should be a non-empty, alphanumeric value
 
@@ -15,7 +15,7 @@ A microservice to manager data about visits of users.
 }
 ```
 
-`POST https://visits-api.herokuapp.com/api/v1/visit`
+#### `POST https://visits-api.herokuapp.com/api/v1/visit`
 * Creates a visit for the specified user
 * `location` should be a non-empty, alphanumeric value
 * `userId` is the ID provided to you when the user record was created via the `POST /user` endpoint
@@ -28,7 +28,7 @@ A microservice to manager data about visits of users.
 }
 ```
 
-`GET https://visits-api.herokuapp.com/api/v1/visit/:visitId`
+#### `GET https://visits-api.herokuapp.com/api/v1/visit/:visitId`
 * Required path parameter: `visitId`
 * Returns exactly one Visit object in a JSON array pertainin to the visitId
 
@@ -43,7 +43,7 @@ A microservice to manager data about visits of users.
 ]
 ```
 
-`GET https://visits-api.herokuapp.com/api/v1/visit?userId={value}&searchString={value}`
+#### `GET https://visits-api.herokuapp.com/api/v1/visit?userId={value}&searchString={value}`
 * Required query parameters: `userId` & `searchString`
 * Returns JSON array of visit objects. These objects are queried using fuzzy matching.
 
